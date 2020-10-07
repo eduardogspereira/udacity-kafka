@@ -88,10 +88,7 @@ class Producer:
 
     def close(self):
         """Prepares the producer for exit by cleaning up the producer"""
-        topics_metadata = self.client.list_topics()
-        for existing_topic in Producer.existing_topics:
-            topic = topics_metadata.topics.get(existing_topic)
-            topic.close()
+        self.producer.flush()
 
     def time_millis(self):
         """Use this function to get the key for Kafka Events"""
