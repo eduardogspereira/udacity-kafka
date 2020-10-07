@@ -29,7 +29,7 @@ class Turnstile(Producer):
         )
 
         super().__init__(
-            f"com.udacity.turnstile.{self.station_name}",
+            f"com.udacity.turnstile",
             key_schema=Turnstile.key_schema,
             value_schema=Turnstile.value_schema,
             num_partitions=3,
