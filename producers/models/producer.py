@@ -32,12 +32,12 @@ class Producer:
         self.num_replicas = num_replicas
 
         self.broker_properties = {
-            "SCHEMA_REGISTRY_URL": "http://localhost:8081",
-            "BROKER_URL": "PLAINTEXT://localhost:9092",
+            "bootstrap.servers": ",".join(["PLAINTEXT://localhost:9092"]),
+            "schema.registry.url": "http://localhost:8081",
         }
 
         self.client = AdminClient(
-            {"bootstrap.servers": self.broker_properties.get("BROKER_URL")}
+            {"bootstrap.servers": self.broker_properties["bootstrap.servers"]}
         )
 
         # If the topic does not already exist, try to create it
@@ -45,15 +45,10 @@ class Producer:
             self.create_topic()
             Producer.existing_topics.add(self.topic_name)
 
-        schema_registry = CachedSchemaRegistryClient(
-            self.broker_properties.get("SCHEMA_REGISTRY_URL")
-        )
-
         self.producer = AvroProducer(
-            {"bootstrap.servers": self.broker_properties.get("BROKER_URL")},
-            schema_registry=schema_registry,
-            default_value_schema=self.value_schema,
-            default_key_schema=self.key_schema,
+            self.broker_properties,
+            default_key_schema=key_schema,
+            default_value_schema=value_schema,
         )
 
     def topic_exists(self):
